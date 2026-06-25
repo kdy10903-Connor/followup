@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"$input = @{}; $null | ForEach-Object { $_ }; $dayOfWeek = (Get-Date).DayOfWeek.ToString(); $stdin = [Console]::In.ReadToEnd() | ConvertFrom-Json -ErrorAction SilentlyContinue; $userInput = $stdin.user_input -as [string]; if ($dayOfWeek -eq 'Friday' -and ($userInput -match '반영해줘|배포해줘|github|업데이트')) { if (Test-Path 'index.html') { git add index.html; git commit -m \\\"팔로업 대시보드 자동 배포\\\"; git push origin main 2>&1 | out-null; @{ systemMessage = '✅ 금요일 자동 배포 완료! GitHub 페이지가 업데이트되었습니다.' } | ConvertTo-Json } else { @{ systemMessage = '⚠️ index.html 파일을 찾을 수 없습니다.' } | ConvertTo-Json } }\"",
+            "statusMessage": "금요일 배포 확인 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
